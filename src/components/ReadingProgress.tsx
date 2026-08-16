@@ -35,10 +35,10 @@ export default function ReadingProgress() {
     <div
       aria-hidden
       data-print-hide
-      className="fixed inset-x-0 top-0 z-50 h-0.5 bg-transparent"
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 h-[3px]"
     >
       <div
-        className="h-full origin-left bg-brand transition-transform duration-150 ease-out"
+        className="h-full origin-left bg-gradient-to-r from-brand to-brand-soft transition-transform duration-150 ease-out"
         style={{ transform: `scaleX(${progress})` }}
       />
     </div>

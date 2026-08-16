@@ -9,11 +9,21 @@ const NAV = [
 export default function Footer() {
   return (
     <footer className="mt-auto border-t border-paper-line bg-paper-dim">
-      <div className="mx-auto max-w-content px-6 py-12">
-        <div className="grid gap-10 sm:grid-cols-3">
+      <div className="mx-auto max-w-content px-5 py-14 sm:px-6">
+        <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
           <div>
-            <p className="font-serif text-lg font-bold text-ink">입법로그</p>
-            <p className="mt-2 text-sm leading-ko text-ink-soft">
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink text-paper"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round">
+                  <path d="M5 18h14M5 12.5h9M5 7h5" />
+                </svg>
+              </span>
+              <p className="font-serif text-lg font-bold text-ink">입법로그</p>
+            </div>
+            <p className="mt-3 text-sm leading-ko text-ink-soft">
               누가 말했는지가 아니라,
               <br />
               무엇이 실제로 바뀌는지를 봅니다.
@@ -21,20 +31,20 @@ export default function Footer() {
           </div>
 
           <nav aria-label="사이트 메뉴">
-            <p className="text-sm font-semibold text-ink">둘러보기</p>
-            <ul className="mt-3 space-y-2.5">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-ink-faint">
+              둘러보기
+            </p>
+            <ul className="mt-3.5 space-y-1">
               {NAV.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="group inline-block rounded text-sm text-ink-soft transition-colors hover:text-brand-strong"
+                    className="group -mx-2 flex min-h-[2.5rem] flex-col justify-center rounded-lg px-2 transition-colors duration-150 hover:bg-paper-line/40"
                   >
-                    <span className="font-medium group-hover:underline">
+                    <span className="text-sm font-medium text-ink-soft transition-colors group-hover:text-brand-strong">
                       {item.label}
                     </span>
-                    <span className="ml-2 text-xs text-ink-faint">
-                      {item.desc}
-                    </span>
+                    <span className="text-xs text-ink-faint">{item.desc}</span>
                   </Link>
                 </li>
               ))}
@@ -42,17 +52,21 @@ export default function Footer() {
           </nav>
 
           <div>
-            <p className="text-sm font-semibold text-ink">한 문장으로 말하면</p>
-            <p className="mt-3 text-sm leading-ko text-ink-soft">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-ink-faint">
+              한 문장으로 말하면
+            </p>
+            <p className="mt-3.5 text-sm leading-ko text-ink-soft">
               정치인의 말을 채점하는 곳이 아니라, 그 말이 실제 정책과 결과로
               어떻게 이어졌는지 남겨 두는 곳입니다.
             </p>
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-paper-line pt-6 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-semibold text-ink-soft">말이 아니라, 결과까지.</p>
-          <p>
+        <div className="mt-12 flex flex-col gap-3 border-t border-paper-line pt-6 text-xs leading-ko-tight text-ink-faint sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-serif text-sm font-bold text-ink-soft">
+            말이 아니라, 결과까지.
+          </p>
+          <p className="max-w-md sm:text-right">
             입법로그는 특정 정당이나 정치인을 지지하거나 반대하기 위해 만들어진
             곳이 아닙니다.
           </p>

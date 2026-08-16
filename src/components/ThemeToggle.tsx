@@ -30,16 +30,18 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={label}
+      aria-pressed={mounted ? isDark : undefined}
       title={label}
       data-print-hide
-      className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-paper-dim hover:text-ink"
+      className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-ink-soft transition-colors duration-150 hover:bg-paper-dim hover:text-ink active:bg-paper-line/60 sm:h-10 sm:w-10"
     >
       {/* 마운트 전에는 아이콘을 비워 두어 서버/클라이언트 불일치를 피한다. */}
       {mounted ? (
         <svg
           aria-hidden
           viewBox="0 0 24 24"
-          className="h-[18px] w-[18px]"
+          className="h-[18px] w-[18px] transition-transform duration-300 ease-out"
+          style={{ transform: isDark ? "rotate(0deg)" : "rotate(-12deg)" }}
           fill="none"
           stroke="currentColor"
           strokeWidth={1.8}

@@ -53,9 +53,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // globals.css의 --paper 값과 같아야 주소창과 화면 배경이 이어져 보인다.
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FAF9F4" },
-    { media: "(prefers-color-scheme: dark)", color: "#131419" },
+    { media: "(prefers-color-scheme: dark)", color: "#111217" },
   ],
 };
 
@@ -77,7 +78,7 @@ export default function RootLayout({
       >
         <a
           href="#main"
-          className="sr-only-focusable absolute left-4 top-4 z-50 rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-paper"
+          className="sr-only-focusable absolute left-4 top-4 z-50 rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-paper shadow-lift"
         >
           본문 바로가기
         </a>

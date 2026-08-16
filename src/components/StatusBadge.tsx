@@ -25,6 +25,9 @@ const TEXT: Record<BillStatus, string> = {
   폐기: "text-status-discarded ring-status-discarded/30",
 };
 
+// '시행 중'은 지금 살아 움직이는 상태라 점에 옅은 테를 둘러 구분한다.
+const LIVE: BillStatus[] = ["시행"];
+
 export default function StatusBadge({
   status,
   className = "",
@@ -35,9 +38,14 @@ export default function StatusBadge({
   return (
     <span
       title={BILL_STATUS_DESCRIPTION[status]}
-      className={`chip gap-1.5 ring-1 ring-inset ${TEXT[status]} ${className}`}
+      className={`chip gap-1.5 bg-surface/60 ring-1 ring-inset ${TEXT[status]} ${className}`}
     >
-      <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${DOT[status]}`} />
+      <span
+        aria-hidden
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[status]} ${
+          LIVE.includes(status) ? "ring-2 ring-status-effective/25" : ""
+        }`}
+      />
       <span className="sr-only">진행 상태: </span>
       {BILL_STATUS_LABEL[status]}
     </span>

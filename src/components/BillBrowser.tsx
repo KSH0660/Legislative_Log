@@ -20,6 +20,35 @@ const GROUP_STATUSES: Record<Exclude<GroupId, "all">, BillStatus[]> = {
   passed: ["통과", "공포"],
 };
 
+/** 필터 칩. 선택 상태는 색만이 아니라 굵기·테두리로도 드러낸다. */
+function FilterChip({
+  active,
+  onClick,
+  title,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      title={title}
+      className={`inline-flex min-h-[2.25rem] cursor-pointer items-center gap-1.5 rounded-full border px-3.5 text-sm transition-[background-color,border-color,color] duration-150 ${
+        active
+          ? "border-ink bg-ink font-semibold text-paper"
+          : "border-paper-line bg-surface font-medium text-ink-soft hover:border-brand/45 hover:bg-paper-dim hover:text-ink"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function BillBrowser({ bills }: { bills: Bill[] }) {
   const [group, setGroup] = useState<GroupId>("all");
   const [category, setCategory] = useState<string>("전체");
@@ -33,7 +62,10 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
   const counts = useMemo(() => {
     const map = new Map<GroupId, number>([["all", bills.length]]);
     (Object.keys(GROUP_STATUSES) as Exclude<GroupId, "all">[]).forEach((id) => {
-      map.set(id, bills.filter((b) => GROUP_STATUSES[id].includes(b.status)).length);
+      map.set(
+        id,
+        bills.filter((b) => GROUP_STATUSES[id].includes(b.status)).length,
+      );
     });
     return map;
   }, [bills]);
@@ -59,7 +91,8 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
     });
   }, [bills, group, category, query]);
 
-  const filtering = group !== "all" || category !== "전체" || query.trim() !== "";
+  const filtering =
+    group !== "all" || category !== "전체" || query.trim() !== "";
 
   function reset() {
     setGroup("all");
@@ -69,106 +102,109 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
 
   return (
     <div>
-      {/* 검색 */}
-      <div className="relative">
-        <label htmlFor="bill-search" className="sr-only">
-          법안 검색
-        </label>
-        <span
-          aria-hidden
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="h-[18px] w-[18px]"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
+      {/* 검색 + 필터를 한 판에 묶어, 목록과 조작부를 시각적으로 분리한다. */}
+      <div className="rounded-2xl border border-paper-line bg-paper-dim/70 p-4 sm:p-5">
+        <div className="relative">
+          <label htmlFor="bill-search" className="sr-only">
+            법안 검색
+          </label>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint"
           >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-3.5-3.5" />
-          </svg>
-        </span>
-        <input
-          id="bill-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="법안 이름이나 키워드로 찾기 (예: 연금, 노동)"
-          className="w-full rounded-xl border border-paper-line bg-surface py-3 pl-11 pr-4 text-sm text-ink placeholder:text-ink-faint focus:border-brand/50"
-        />
-      </div>
-
-      {/* 진행 단계 */}
-      <div className="mt-4">
-        <p className="mb-2 text-xs font-bold tracking-wide text-ink-faint">
-          진행 단계
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {GROUPS.map((g) => {
-            const active = group === g.id;
-            const count = counts.get(g.id) ?? 0;
-            return (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => setGroup(g.id)}
-                aria-pressed={active}
-                title={"hint" in g ? g.hint : undefined}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                  active
-                    ? "border-ink bg-ink text-paper"
-                    : "border-paper-line bg-surface text-ink-soft hover:border-brand/45 hover:text-ink"
-                }`}
-              >
-                {g.label}
-                <span
-                  className={`text-xs tabular-nums ${
-                    active ? "text-paper/70" : "text-ink-faint"
-                  }`}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+            <svg
+              viewBox="0 0 24 24"
+              className="h-[18px] w-[18px]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </span>
+          <input
+            id="bill-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="법안 이름이나 키워드로 찾기 (예: 연금, 노동)"
+            className="w-full rounded-xl border border-paper-line bg-surface py-3 pl-11 pr-4 text-[15px] text-ink shadow-card transition-colors duration-150 placeholder:text-ink-faint hover:border-brand/35 focus:border-brand/60"
+          />
         </div>
-      </div>
 
-      {/* 분야 */}
-      {categories.length > 2 && (
+        {/* 진행 단계 */}
         <div className="mt-4">
-          <p className="mb-2 text-xs font-bold tracking-wide text-ink-faint">
-            분야
+          <p
+            id="filter-stage"
+            className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint"
+          >
+            진행 단계
           </p>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((c) => {
-              const active = category === c;
+          <div
+            role="group"
+            aria-labelledby="filter-stage"
+            className="flex flex-wrap gap-2"
+          >
+            {GROUPS.map((g) => {
+              const active = group === g.id;
+              const count = counts.get(g.id) ?? 0;
               return (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setCategory(c)}
-                  aria-pressed={active}
-                  className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "border-brand bg-brand/10 text-brand-strong"
-                      : "border-paper-line bg-surface text-ink-soft hover:border-brand/45 hover:text-ink"
-                  }`}
+                <FilterChip
+                  key={g.id}
+                  active={active}
+                  onClick={() => setGroup(g.id)}
+                  title={"hint" in g ? g.hint : undefined}
                 >
-                  {c}
-                </button>
+                  {g.label}
+                  <span
+                    className={`num text-xs ${
+                      active ? "text-paper/70" : "text-ink-faint"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </FilterChip>
               );
             })}
           </div>
         </div>
-      )}
+
+        {/* 분야 */}
+        {categories.length > 2 && (
+          <div className="mt-4 border-t border-paper-line pt-4">
+            <p
+              id="filter-category"
+              className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint"
+            >
+              분야
+            </p>
+            <div
+              role="group"
+              aria-labelledby="filter-category"
+              className="flex flex-wrap gap-2"
+            >
+              {categories.map((c) => (
+                <FilterChip
+                  key={c}
+                  active={category === c}
+                  onClick={() => setCategory(c)}
+                >
+                  {c}
+                </FilterChip>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* 결과 */}
-      <div className="mt-8 flex items-center justify-between gap-4 border-t border-paper-line pt-5">
+      <div className="mt-6 flex items-center justify-between gap-4">
         <p aria-live="polite" className="text-sm text-ink-soft">
-          <strong className="font-bold text-ink">{filtered.length}건</strong>
+          <strong className="font-bold text-ink">
+            <span className="num">{filtered.length}</span>건
+          </strong>
           {filtering && (
             <span className="text-ink-faint"> / 전체 {bills.length}건</span>
           )}
@@ -177,30 +213,55 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
           <button
             type="button"
             onClick={reset}
-            className="rounded text-sm font-medium text-brand-strong underline-offset-4 hover:underline"
+            className="inline-flex min-h-[2.25rem] cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-brand-strong transition-colors duration-150 hover:bg-paper-dim"
           >
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.4}
+              strokeLinecap="round"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
             조건 지우기
           </button>
         )}
       </div>
 
       {filtered.length > 0 ? (
-        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((bill) => (
             <BillCard key={bill.slug} bill={bill} />
           ))}
         </div>
       ) : (
-        <div className="mt-5 rounded-xl border border-dashed border-paper-line py-16 text-center">
-          <p className="font-semibold text-ink">조건에 맞는 기록이 없습니다.</p>
-          <p className="mt-1.5 text-sm text-ink-soft">
+        <div className="mt-4 rounded-2xl border border-dashed border-paper-line px-6 py-16 text-center">
+          <span
+            aria-hidden
+            className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-paper-dim text-ink-faint"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </span>
+          <p className="mt-4 font-semibold text-ink">
+            조건에 맞는 기록이 없습니다.
+          </p>
+          <p className="mx-auto mt-1.5 max-w-xs text-sm leading-ko text-ink-soft">
             검색어를 줄이거나 진행 단계를 &lsquo;전체&rsquo;로 바꿔 보세요.
           </p>
-          <button
-            type="button"
-            onClick={reset}
-            className="btn-secondary mt-5 py-2 text-sm"
-          >
+          <button type="button" onClick={reset} className="btn-secondary mt-6">
             조건 지우기
           </button>
         </div>

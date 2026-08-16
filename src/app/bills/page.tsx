@@ -12,18 +12,23 @@ export default function BillsPage() {
   const bills = getAllBills();
 
   return (
-    <div className="mx-auto max-w-content px-5 py-12 sm:px-6 sm:py-14">
-      <p className="eyebrow">추적 중인 기록</p>
-      <h1 className="mt-2 font-serif text-3xl font-bold leading-tight text-ink sm:text-4xl">
-        법안·정책 추적
-      </h1>
-      <p className="mt-3 max-w-prose text-[15px] leading-ko text-ink-soft">
-        발의부터 시행까지, 그리고 시행 뒤 실제로 무슨 일이 벌어졌는지까지
-        기록합니다. 어느 단계에 있든 모든 법안을 똑같은 10단계 구조로 정리하기
-        때문에, 서로 다른 법안도 같은 기준으로 비교해 볼 수 있습니다.
-      </p>
+    <div>
+      <div className="border-b border-paper-line bg-paper-dim">
+        <div className="mx-auto max-w-content px-5 py-12 sm:px-6 sm:py-16">
+          <p className="eyebrow">추적 중인 기록</p>
+          <h1 className="mt-3 font-serif text-title font-bold text-ink">
+            법안·정책 추적
+          </h1>
+          <p className="mt-4 max-w-2xl prose-ko">
+            발의부터 시행까지, 그리고 시행 뒤 실제로 무슨 일이 벌어졌는지까지
+            기록합니다. 어느 단계에 있든 모든 법안을 똑같은 10단계 구조로
+            정리하기 때문에, 서로 다른 법안도 같은 기준으로 비교해 볼 수
+            있습니다.
+          </p>
+        </div>
+      </div>
 
-      <div className="mt-9">
+      <div className="mx-auto max-w-content px-5 py-10 sm:px-6 sm:py-12">
         <BillBrowser bills={bills} />
       </div>
     </div>

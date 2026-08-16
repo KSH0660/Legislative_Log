@@ -60,9 +60,10 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="scroll-mt-24 font-serif text-2xl font-bold text-ink sm:text-[1.7rem]"
+      className="scroll-mt-28 font-serif text-heading font-bold text-ink"
     >
       {children}
+      <span aria-hidden className="mt-3 block h-px w-12 bg-brand/60" />
     </h2>
   );
 }
@@ -71,7 +72,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-prose px-5 py-12 sm:px-6 sm:py-16">
       <p className="eyebrow">소개</p>
-      <h1 className="mt-2 font-serif text-3xl font-bold leading-tight text-ink sm:text-4xl">
+      <h1 className="mt-3 font-serif text-title font-bold text-ink">
         누가 말했는지가 아니라,
         <br />
         무엇이 실제로 바뀌는지를 봅니다.
@@ -81,18 +82,21 @@ export default function AboutPage() {
       <nav
         aria-label="이 페이지 목차"
         data-print-hide
-        className="mt-8 rounded-xl border border-paper-line bg-paper-dim p-4"
+        className="mt-9 rounded-xl border border-paper-line bg-paper-dim p-4 sm:p-5"
       >
-        <p className="text-xs font-bold tracking-wide text-ink-faint">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
           이 페이지에서 다루는 것
         </p>
-        <ul className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5">
-          {TOC.map((item) => (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {TOC.map((item, i) => (
             <li key={item.href}>
               <a
                 href={item.href}
-                className="rounded text-sm font-medium text-ink-soft underline-offset-4 hover:text-brand-strong hover:underline"
+                className="inline-flex min-h-[2.25rem] items-center gap-2 rounded-full border border-paper-line bg-surface px-3.5 text-sm font-medium text-ink-soft transition-colors duration-150 hover:border-brand/45 hover:text-ink"
               >
+                <span className="num text-[11px] text-ink-faint">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 {item.label}
               </a>
             </li>
@@ -118,7 +122,7 @@ export default function AboutPage() {
             입법로그는 특정 정당이나 정치인을 지지하거나 공격하지 않습니다.
             대신 하나의 질문만 붙듭니다.
           </p>
-          <p className="border-l-4 border-brand pl-4 font-serif text-xl font-semibold text-ink">
+          <p className="border-l-[3px] border-brand pl-5 font-serif text-xl font-bold text-brand-strong sm:text-2xl">
             &ldquo;그래서 실제로 무엇이 바뀌는가?&rdquo;
           </p>
           <p>
@@ -146,7 +150,7 @@ export default function AboutPage() {
       {/* 왜 만들었나 */}
       <section className="mt-14">
         <H2 id="philosophy">왜 만들었나</H2>
-        <div className="mt-4 rounded-xl border border-paper-line bg-paper-dim p-5 sm:p-6">
+        <div className="panel mt-5">
           <p className="font-serif text-lg font-bold text-brand-strong">
             지피지기면 백전불태.
           </p>
@@ -168,20 +172,20 @@ export default function AboutPage() {
       {/* 원칙 */}
       <section className="mt-14">
         <H2 id="principles">일곱 가지 원칙</H2>
-        <ol className="mt-6 space-y-5">
+        <ol className="mt-7 space-y-3">
           {PRINCIPLES.map((p) => (
-            <li key={p.n} className="flex gap-4">
+            <li key={p.n} className="card flex gap-4 p-4 sm:p-5">
               <span
                 aria-hidden
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink font-serif text-sm font-bold text-paper"
+                className="num flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-bold text-paper"
               >
                 {p.n}
               </span>
-              <div>
+              <div className="min-w-0">
                 <h3 className="font-semibold leading-snug text-ink">
                   {p.title}
                 </h3>
-                <p className="mt-1.5 text-sm leading-ko text-ink-soft">
+                <p className="mt-2 text-sm leading-ko text-ink-soft">
                   {p.body}
                 </p>
               </div>
@@ -210,10 +214,10 @@ export default function AboutPage() {
           법마다 설명 방식이 다르면 서로 비교할 수 없습니다. 그래서 모든 법안을
           아래 순서 그대로 정리합니다.
         </p>
-        <ol className="mt-6 space-y-2.5">
+        <ol className="mt-7 space-y-2.5">
           {BILL_SECTIONS.filter((s) => s.id !== "sources").map((s) => (
             <li key={s.id} className="card flex gap-4 p-4">
-              <span className="shrink-0 font-serif text-sm font-bold tracking-widest text-brand-strong">
+              <span className="num shrink-0 text-sm font-bold tracking-[0.18em] text-brand-strong">
                 {s.label}
               </span>
               <div className="min-w-0">
@@ -236,7 +240,7 @@ export default function AboutPage() {
       {/* 장기 계획 */}
       <section className="mt-14">
         <H2 id="vision">앞으로의 계획</H2>
-        <div className="mt-4 rounded-xl border border-paper-line bg-paper-dim p-5 sm:p-6">
+        <div className="panel mt-5">
           <div className="space-y-3 text-sm leading-ko text-ink-soft">
             <p>
               목표는 또 하나의 정치 채널을 만드는 것이 아닙니다. 어떤 정책이 왜
@@ -257,13 +261,14 @@ export default function AboutPage() {
       </section>
 
       {/* 맺음 */}
-      <div className="mt-16 border-t border-paper-line pt-10 text-center">
+      <div className="mt-20 border-t border-paper-line pt-12 text-center">
         <p className="eyebrow">한 문장으로 말하면</p>
-        <p className="mx-auto mt-3 max-w-md font-serif text-xl font-bold leading-snug text-ink">
+        <p className="mx-auto mt-4 max-w-md font-serif text-xl font-bold leading-snug text-ink">
           정치인의 말을 채점하는 곳이 아니라, 그 말이 실제 정책과 결과로 어떻게
           이어졌는지 남겨 두는 곳입니다.
         </p>
-        <p className="mt-6 font-serif text-2xl font-bold text-brand-strong">
+        <span aria-hidden className="mx-auto mt-9 block h-px w-16 bg-paper-line" />
+        <p className="mt-8 font-serif text-2xl font-bold text-brand-strong">
           말이 아니라, 결과까지.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
