@@ -1,23 +1,45 @@
 export default function SectionHeading({
-  number,
+  label,
   title,
-  description,
+  lede,
+  anchor,
+  titleId,
 }: {
-  number: string;
+  label: string;
   title: string;
-  description?: string;
+  lede?: string;
+  anchor?: string;
+  titleId?: string;
 }) {
   return (
-    <div className="mb-6 flex items-start gap-4">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink font-serif text-base font-bold text-paper">
-        {number}
-      </span>
-      <div>
-        <h2 className="font-serif text-2xl font-bold text-ink">{title}</h2>
-        {description && (
-          <p className="mt-1 text-sm text-ink-faint">{description}</p>
+    <div className="mb-6">
+      <div className="flex items-baseline gap-3">
+        <span className="font-serif text-sm font-bold tracking-widest text-brand-strong">
+          {label}
+        </span>
+        <span aria-hidden className="h-px flex-1 bg-paper-line" />
+        {anchor && (
+          <a
+            href={`#${anchor}`}
+            data-print-hide
+            aria-label={`${title} 위치로 링크 복사`}
+            className="text-xs text-ink-faint opacity-0 transition-opacity hover:text-brand-strong focus-visible:opacity-100 group-hover:opacity-100"
+          >
+            #
+          </a>
         )}
       </div>
+      <h2
+        id={titleId}
+        className="mt-2 font-serif text-2xl font-bold leading-snug text-ink sm:text-[1.7rem]"
+      >
+        {title}
+      </h2>
+      {lede && (
+        <p className="mt-2 max-w-prose text-sm leading-ko text-ink-faint">
+          {lede}
+        </p>
+      )}
     </div>
   );
 }

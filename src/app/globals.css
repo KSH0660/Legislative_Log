@@ -2,22 +2,251 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   디자인 토큰
+   색은 RGB 채널값만 담아 두고 Tailwind에서 rgb(var(--x) / <alpha-value>)로 쓴다.
+   --------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --paper: 250 249 244;
+    --paper-dim: 242 239 231;
+    --paper-line: 226 221 208;
+    --surface: 255 255 255;
+    --surface-soft: 247 245 238;
+
+    --ink: 24 26 31;
+    --ink-soft: 62 66 79;
+    --ink-faint: 92 95 110; /* #5C5F6E — 본문 배경 대비 6:1 이상 */
+
+    --brand: 138 90 34;
+    --brand-strong: 107 68 25;
+    --brand-soft: 183 134 63;
+
+    --claim-fact: 21 100 66;
+    --claim-fact-bg: 231 242 235;
+    --claim-official: 47 62 86;
+    --claim-official-bg: 234 238 244;
+    --claim-interpretation: 95 52 134;
+    --claim-interpretation-bg: 241 234 246;
+    --claim-forecast: 140 79 16;
+    --claim-forecast-bg: 251 238 222;
+    --claim-allegation: 152 37 51;
+    --claim-allegation-bg: 250 234 236;
+
+    --stance-pro: 39 89 133;
+    --stance-pro-bg: 232 239 246;
+    --stance-con: 128 66 99;
+    --stance-con-bg: 246 234 241;
+
+    --status-proposed: 92 95 110;
+    --status-review: 140 79 16;
+    --status-pending: 95 52 134;
+    --status-passed: 21 100 66;
+    --status-promulgated: 21 100 66;
+    --status-effective: 138 90 34;
+    --status-discarded: 152 37 51;
+
+    --shadow: 24 26 31;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --paper: 19 20 25;
+    --paper-dim: 25 27 33;
+    --paper-line: 52 55 67;
+    --surface: 31 33 41;
+    --surface-soft: 38 41 50;
+
+    --ink: 242 240 233;
+    --ink-soft: 199 201 210;
+    --ink-faint: 154 158 172;
+
+    --brand: 201 149 78;
+    --brand-strong: 226 179 108;
+    --brand-soft: 154 111 55;
+
+    --claim-fact: 111 211 160;
+    --claim-fact-bg: 20 43 33;
+    --claim-official: 157 182 220;
+    --claim-official-bg: 26 35 50;
+    --claim-interpretation: 195 155 232;
+    --claim-interpretation-bg: 39 28 51;
+    --claim-forecast: 229 168 90;
+    --claim-forecast-bg: 48 34 18;
+    --claim-allegation: 240 138 151;
+    --claim-allegation-bg: 53 26 30;
+
+    --stance-pro: 134 182 224;
+    --stance-pro-bg: 22 35 48;
+    --stance-con: 222 156 188;
+    --stance-con-bg: 46 27 37;
+
+    --status-proposed: 154 158 172;
+    --status-review: 229 168 90;
+    --status-pending: 195 155 232;
+    --status-passed: 111 211 160;
+    --status-promulgated: 111 211 160;
+    --status-effective: 226 179 108;
+    --status-discarded: 240 138 151;
+
+    --shadow: 0 0 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   기본 타이포그래피 — 한국어 가독성 우선
+   --------------------------------------------------------------------------- */
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-paper text-ink antialiased;
+    /* 한글은 어절 중간에서 줄바꿈되면 읽기 흐름이 끊긴다.
+       keep-all로 어절을 붙여 두고, 긴 URL 등만 예외적으로 끊는다. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    letter-spacing: -0.003em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    word-break: keep-all;
+    text-wrap: balance;
+    letter-spacing: -0.018em;
+  }
+
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+
+  /* 표 안의 셀은 좁은 폭에서 keep-all이 오히려 넘칠 수 있어 완화한다. */
+  td,
+  th {
+    overflow-wrap: anywhere;
   }
 
   ::selection {
-    @apply bg-brand/20;
+    @apply bg-brand/25;
+  }
+
+  /* 키보드 사용자를 위한 포커스 링 — 기존에는 아무 표시가 없었다. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--brand-strong));
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* 애니메이션을 줄이도록 설정한 사용자 존중 */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   반복되는 조합을 컴포넌트 클래스로 정리
+   --------------------------------------------------------------------------- */
+@layer components {
+  .card {
+    @apply rounded-xl border border-paper-line bg-surface shadow-card;
+  }
+
+  .card-interactive {
+    @apply card transition duration-200 hover:-translate-y-0.5 hover:border-brand/45 hover:shadow-lift;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors;
+  }
+
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-ink-soft;
+  }
+
+  .btn-secondary {
+    @apply btn border border-paper-line bg-surface text-ink hover:border-brand/45 hover:bg-paper-dim;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  /* 본문 문단 — 한글 행간을 넉넉하게 */
+  .prose-ko {
+    @apply text-[15px] leading-ko text-ink-soft sm:text-base;
+  }
+
+  .eyebrow {
+    @apply text-xs font-bold tracking-[0.14em] text-brand-strong;
+  }
+
+  .link-quiet {
+    @apply text-brand-strong underline-offset-4 hover:underline;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* 어절 단위 줄바꿈을 강제하고 싶은 곳 (짧은 제목 등) */
+  .keep-all {
+    word-break: keep-all;
+  }
+
+  /* 스크린리더 전용 */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   인쇄 — 기록물 성격상 출력해서 읽는 경우를 고려
+   --------------------------------------------------------------------------- */
+@media print {
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    word-break: break-all;
   }
 }
