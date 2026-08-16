@@ -18,7 +18,7 @@ const notoSerif = Noto_Serif_KR({
   display: "swap",
 });
 
-const siteUrl = "https://legislative-log.example";
+const siteUrl = "https://ksh0660.github.io/Legislative_Log";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
