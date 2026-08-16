@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllBills, getBillBySlug } from "@/lib/bills";
+import { BILL_STATUS_DESCRIPTION } from "@/types/bill";
+import { getSection } from "@/lib/sections";
 import StatusBadge from "@/components/StatusBadge";
 import Section from "@/components/Section";
 import ComparisonTable from "@/components/ComparisonTable";
@@ -11,6 +13,13 @@ import EvidenceList from "@/components/EvidenceList";
 import PredictionList from "@/components/PredictionList";
 import OutcomeTracker from "@/components/OutcomeTracker";
 import SourceList from "@/components/SourceList";
+import BillTimeline from "@/components/BillTimeline";
+import {
+  SectionNavDesktop,
+  SectionNavMobile,
+} from "@/components/TableOfContents";
+import ReadingProgress from "@/components/ReadingProgress";
+import ClaimLegend from "@/components/ClaimLegend";
 
 export function generateStaticParams() {
   return getAllBills().map((bill) => ({ slug: bill.slug }));
@@ -26,22 +35,10 @@ export async function generateMetadata({
   if (!bill) return {};
   return {
     title: bill.shortTitle,
-    description: bill.summary30s,
+    description: bill.summary30s.slice(0, 155),
+    openGraph: { title: bill.shortTitle, description: bill.summary30s.slice(0, 155) },
   };
 }
-
-type DateFieldKey =
-  | "proposedDate"
-  | "passedDate"
-  | "promulgatedDate"
-  | "effectiveDate";
-
-const META_ROWS: { label: string; key: DateFieldKey }[] = [
-  { label: "발의", key: "proposedDate" },
-  { label: "국회 통과", key: "passedDate" },
-  { label: "공포", key: "promulgatedDate" },
-  { label: "시행", key: "effectiveDate" },
-];
 
 export default async function BillDetailPage({
   params,
@@ -53,208 +50,279 @@ export default async function BillDetailPage({
   if (!bill) notFound();
 
   return (
-    <div className="pb-20">
-      {/* Hero */}
+    <>
+      <ReadingProgress />
+
+      {/* ── 머리말 ─────────────────────────────────────────────── */}
       <div className="border-b border-paper-line bg-paper-dim">
-        <div className="mx-auto max-w-content px-6 py-10">
+        <div className="mx-auto max-w-content px-5 py-8 sm:px-6 sm:py-10">
           <Link
             href="/bills"
-            className="text-sm text-ink-faint hover:text-brand hover:underline"
+            data-print-hide
+            className="inline-flex items-center gap-1.5 rounded text-sm text-ink-faint transition-colors hover:text-brand-strong"
           >
-            ← 법안·정책 목록
+            <span aria-hidden>←</span> 법안·정책 목록으로
           </Link>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-brand-dark">
+
+          <div className="mt-5 flex flex-wrap items-center gap-2.5">
+            <span className="chip bg-surface text-brand-strong ring-1 ring-inset ring-paper-line">
               {bill.category}
             </span>
             <StatusBadge status={bill.status} />
           </div>
-          <h1 className="mt-3 font-serif text-3xl font-bold leading-tight text-ink sm:text-4xl">
-            {bill.title}
+
+          <h1 className="mt-3 max-w-4xl font-serif text-[1.7rem] font-bold leading-tight text-ink sm:text-4xl">
+            {bill.shortTitle}
           </h1>
-          <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {META_ROWS.filter(({ key }) => bill[key]).map(({ label, key }) => (
-              <div key={key}>
-                <dt className="text-xs text-ink-faint">{label}</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-ink">
-                  {bill[key]}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <p className="mt-2 max-w-3xl text-sm leading-ko-tight text-ink-soft">
+            정식 명칭: {bill.title}
+          </p>
+
+          <p className="mt-4 max-w-2xl rounded-lg border border-paper-line bg-surface px-3.5 py-2.5 text-sm leading-ko text-ink-soft">
+            <span className="font-semibold text-ink">
+              지금 상태 · {bill.status === "본회의_계류" ? "본회의 계류" : bill.status}
+            </span>
+            <br />
+            {BILL_STATUS_DESCRIPTION[bill.status]}
+          </p>
+
+          <div className="mt-8 border-t border-paper-line pt-7">
+            <BillTimeline bill={bill} />
+          </div>
+
+          <ul className="mt-7 flex flex-wrap gap-1.5">
             {bill.tags.map((tag) => (
-              <span
+              <li
                 key={tag}
-                className="rounded-full bg-white px-2 py-0.5 text-xs text-ink-faint"
+                className="rounded-full bg-surface px-2.5 py-1 text-xs text-ink-faint ring-1 ring-inset ring-paper-line"
               >
                 #{tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ① 30초 요약 */}
-      <Section number="①" title="30초 요약" tone="muted">
-        <p className="text-lg leading-relaxed text-ink">{bill.summary30s}</p>
-      </Section>
-
-      {/* ② 현재 vs 변경 후 */}
-      <Section number="②" title="현재 vs 변경 후">
-        <ComparisonTable rows={bill.comparison} note={bill.comparisonNote} />
-      </Section>
-
-      {/* ③④ 추진/반대 측 주장 */}
-      <Section
-        number="③④"
-        title="추진 측 주장 vs 반대 측 주장"
-        description="양측이 제시할 수 있는 가장 설득력 있는 논리를 함께 보여줍니다."
-        tone="muted"
-      >
-        <div className="grid gap-6 lg:grid-cols-2">
-          <ArgumentList
-            title="추진 측 주장"
-            accent="proponent"
-            points={bill.proponentArguments}
-          />
-          <ArgumentList
-            title="반대 측 주장"
-            accent="opponent"
-            points={bill.opponentArguments}
-          />
-        </div>
-      </Section>
-
-      {/* ⑤ 실제 작동 구조 */}
-      <Section number="⑤" title="실제 작동 구조">
-        <p className="text-ink-soft leading-relaxed">{bill.mechanismSummary}</p>
-        <ol className="mt-6 space-y-4">
-          {bill.mechanismSteps.map((step, i) => (
-            <li key={i} className="flex gap-4 rounded-lg border border-paper-line bg-white p-4">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-paper-dim text-sm font-bold text-ink-soft">
-                {i + 1}
-              </span>
-              <div>
-                <p className="font-semibold text-ink">{step.step}</p>
-                <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-                  {step.detail}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {/* ⑥ 수혜자와 비용 부담자 */}
-      <Section number="⑥" title="수혜자와 비용 부담자" tone="muted">
-        <StakeholderGrid
-          beneficiaries={bill.beneficiaries}
-          costBearers={bill.costBearers}
-        />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border border-paper-line bg-white p-4">
-            <p className="text-sm font-semibold text-ink">정부 재정 영향</p>
-            <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-              {bill.fiscalImpact}
-            </p>
-          </div>
-          <div className="rounded-lg border border-paper-line bg-white p-4">
-            <p className="text-sm font-semibold text-ink">예상되는 부작용</p>
-            <ul className="mt-1 list-inside list-disc space-y-1 text-sm leading-relaxed text-ink-soft">
-              {bill.sideEffectRisks.map((risk, i) => (
-                <li key={i}>{risk}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Section>
-
-      {/* ⑦ 근거와 불확실성 */}
-      <Section number="⑦" title="근거와 불확실성">
-        <EvidenceList items={bill.evidence} />
-        <div className="mt-6 rounded-lg border border-dashed border-ink-faint/40 bg-paper-dim/60 p-4">
-          <p className="text-sm font-semibold text-ink">아직 확인되지 않은 부분</p>
-          <ul className="mt-2 list-inside list-disc space-y-1 text-sm leading-relaxed text-ink-soft">
-            {bill.uncertainties.map((u, i) => (
-              <li key={i}>{u}</li>
+              </li>
             ))}
           </ul>
         </div>
-      </Section>
+      </div>
 
-      {/* ⑧ 입법로그 분석 */}
-      <Section
-        number="⑧"
-        title="입법로그 분석"
-        description="사실과 가치판단을 분리해 제시합니다."
-        tone="muted"
-      >
-        <div className="grid gap-6 md:grid-cols-2">
+      {/* ── 본문 + 목차 ────────────────────────────────────────── */}
+      {/* 모바일에서는 좌우 여백을 각 Section이 직접 갖는다. 배경 톤이 화면 끝까지 닿게 하기 위해서다. */}
+      <div className="mx-auto max-w-content lg:px-6">
+        <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
+          {/* sticky는 부모 높이를 벗어날 수 없어, 본문만큼 키가 큰 이 컨테이너의 직계 자식으로 둔다. */}
+          <SectionNavMobile />
+
+          <aside className="hidden lg:block lg:py-14">
+            <SectionNavDesktop />
+          </aside>
+
           <div>
-            <h3 className="mb-3 font-serif text-lg font-bold text-ink">확인된 사실</h3>
-            <ul className="space-y-2">
-              {bill.analysisFacts.map((f, i) => (
-                <li
-                  key={i}
-                  className="rounded-lg border border-claim-fact/30 bg-claim-fact-bg/40 p-3 text-sm leading-relaxed text-ink"
-                >
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="mb-3 font-serif text-lg font-bold text-ink">
-              입법로그의 가치판단{" "}
-              <span className="text-xs font-normal text-ink-faint">
-                (의견입니다)
-              </span>
-            </h3>
-            <ul className="space-y-2">
-              {bill.analysisJudgment.map((j, i) => (
-                <li
-                  key={i}
-                  className="rounded-lg border border-claim-interpretation/30 bg-claim-interpretation-bg/40 p-3 text-sm leading-relaxed text-ink"
-                >
-                  {j}
-                </li>
-              ))}
-            </ul>
+            {/* 01 · 30초 요약 */}
+            <Section section={getSection("summary")} tone="muted">
+              <p className="max-w-prose font-serif text-lg leading-ko text-ink sm:text-xl">
+                {bill.summary30s}
+              </p>
+            </Section>
+
+            {/* 02 · 무엇이 달라지나 */}
+            <Section section={getSection("compare")}>
+              <ComparisonTable
+                rows={bill.comparison}
+                note={bill.comparisonNote}
+              />
+            </Section>
+
+            {/* 03 · 04 찬반 논리 */}
+            <Section section={getSection("arguments")} tone="muted">
+              <div className="grid gap-5 lg:grid-cols-2">
+                <ArgumentList
+                  title="03 · 추진하는 쪽은 이렇게 말합니다"
+                  subtitle="왜 이 법이 필요하다고 보는가"
+                  accent="proponent"
+                  points={bill.proponentArguments}
+                />
+                <ArgumentList
+                  title="04 · 반대하는 쪽은 이렇게 말합니다"
+                  subtitle="무엇을 걱정하는가"
+                  accent="opponent"
+                  points={bill.opponentArguments}
+                />
+              </div>
+              <p className="mt-4 text-xs leading-ko-tight text-ink-faint">
+                양쪽 색깔은 구분을 위한 것일 뿐, 어느 쪽이 옳다는 표시가
+                아닙니다.
+              </p>
+            </Section>
+
+            {/* 05 · 작동 방식 */}
+            <Section section={getSection("mechanism")}>
+              <p className="max-w-prose text-[15px] leading-ko text-ink-soft">
+                {bill.mechanismSummary}
+              </p>
+              <ol className="mt-6 space-y-3">
+                {bill.mechanismSteps.map((step, i) => (
+                  <li key={i} className="card flex gap-4 p-4">
+                    <span
+                      aria-hidden
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-paper-dim font-serif text-sm font-bold text-ink-soft"
+                    >
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold leading-ko-tight text-ink">
+                        {step.step}
+                      </p>
+                      <p className="mt-1 text-sm leading-ko text-ink-soft">
+                        {step.detail}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Section>
+
+            {/* 06 · 이득과 부담 */}
+            <Section section={getSection("stakeholders")} tone="muted">
+              <StakeholderGrid
+                beneficiaries={bill.beneficiaries}
+                costBearers={bill.costBearers}
+              />
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="card p-4">
+                  <p className="text-sm font-bold text-ink">
+                    나라 살림에 미치는 영향
+                  </p>
+                  <p className="mt-1.5 text-sm leading-ko text-ink-soft">
+                    {bill.fiscalImpact}
+                  </p>
+                </div>
+                <div className="card p-4">
+                  <p className="text-sm font-bold text-ink">
+                    이런 부작용이 생길 수 있습니다
+                  </p>
+                  <ul className="mt-1.5 space-y-1.5 text-sm leading-ko text-ink-soft">
+                    {bill.sideEffectRisks.map((risk, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span aria-hidden className="text-ink-faint">
+                          ·
+                        </span>
+                        <span>{risk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            {/* 07 · 근거와 한계 */}
+            <Section section={getSection("evidence")}>
+              <EvidenceList items={bill.evidence} />
+              <div className="mt-6 rounded-xl border border-dashed border-ink-faint/40 bg-paper-dim/60 p-4 sm:p-5">
+                <p className="text-sm font-bold text-ink">
+                  아직 알 수 없는 것들
+                </p>
+                <p className="mt-1 text-xs leading-ko-tight text-ink-faint">
+                  모르는 부분을 아는 척하지 않기 위해 따로 적어 둡니다.
+                </p>
+                <ul className="mt-3 space-y-2 text-sm leading-ko text-ink-soft">
+                  {bill.uncertainties.map((u, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span aria-hidden className="text-ink-faint">
+                        ?
+                      </span>
+                      <span>{u}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Section>
+
+            {/* 08 · 입법로그 판단 */}
+            <Section section={getSection("analysis")} tone="muted">
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-ink">
+                    확인된 사실
+                  </h3>
+                  <p className="mt-1 text-xs leading-ko-tight text-ink-faint">
+                    자료로 뒷받침되는 내용입니다.
+                  </p>
+                  <ul className="mt-3 space-y-2">
+                    {bill.analysisFacts.map((f, i) => (
+                      <li
+                        key={i}
+                        className="rounded-lg border border-claim-fact/25 bg-claim-fact-bg/50 p-3.5 text-sm leading-ko text-ink"
+                      >
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-ink">
+                    입법로그의 의견
+                  </h3>
+                  <p className="mt-1 text-xs leading-ko-tight text-ink-faint">
+                    사실이 아니라 판단입니다. 다르게 볼 수 있습니다.
+                  </p>
+                  <ul className="mt-3 space-y-2">
+                    {bill.analysisJudgment.map((j, i) => (
+                      <li
+                        key={i}
+                        className="rounded-lg border border-claim-interpretation/25 bg-claim-interpretation-bg/50 p-3.5 text-sm leading-ko text-ink"
+                      >
+                        {j}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            {/* 09 · 예측 기록 */}
+            <Section section={getSection("predictions")}>
+              <PredictionList predictions={bill.predictions} />
+            </Section>
+
+            {/* 10 · 결과 추적 */}
+            <Section section={getSection("outcomes")} tone="muted">
+              <OutcomeTracker
+                checks={bill.outcomeTracking}
+                predictions={bill.predictions}
+              />
+            </Section>
+
+            {/* 출처 */}
+            <Section section={getSection("sources")}>
+              <SourceList sources={bill.sources} />
+
+              <div className="mt-8 rounded-xl border border-paper-line bg-paper-dim p-5">
+                <p className="text-sm font-bold text-ink">
+                  문장 옆 표식은 이런 뜻입니다
+                </p>
+                <div className="mt-3">
+                  <ClaimLegend compact />
+                </div>
+                <p className="mt-3 text-xs leading-ko-tight text-ink-faint">
+                  표식에 마우스를 올리면 자세한 설명이 나옵니다. 전체 설명은{" "}
+                  <Link href="/about#claim-types" className="link-quiet">
+                    소개 페이지
+                  </Link>
+                  에 있습니다.
+                </p>
+              </div>
+
+              <p className="mt-6 text-xs leading-ko text-ink-faint">
+                이 문서는 {bill.lastUpdated}에 마지막으로 손봤습니다. 사실이
+                틀렸거나 새로 확인된 자료가 있다면{" "}
+                <Link href="/corrections" className="link-quiet">
+                  정정 기록
+                </Link>{" "}
+                페이지의 기준에 따라 검토한 뒤 고치고, 무엇을 왜 고쳤는지
+                남깁니다.
+              </p>
+            </Section>
           </div>
         </div>
-      </Section>
-
-      {/* ⑨ 예측 기록 */}
-      <Section
-        number="⑨"
-        title="예측 기록"
-        description="정책 시행 당시 제시된 전망을 시점·주체와 함께 그대로 기록합니다."
-      >
-        <PredictionList predictions={bill.predictions} />
-      </Section>
-
-      {/* ⑩ 결과 추적 */}
-      <Section
-        number="⑩"
-        title="결과 추적"
-        description="6개월·1년·3년 후 실제 데이터를 확인해 예측과 비교합니다."
-        tone="muted"
-      >
-        <OutcomeTracker checks={bill.outcomeTracking} predictions={bill.predictions} />
-      </Section>
-
-      {/* 출처 */}
-      <Section number="✓" title="출처">
-        <SourceList sources={bill.sources} />
-        <p className="mt-6 text-xs text-ink-faint">
-          최근 업데이트: {bill.lastUpdated}. 오류나 갱신할 내용을 발견하셨다면{" "}
-          <Link href="/corrections" className="text-brand hover:underline">
-            정정 기록
-          </Link>{" "}
-          페이지의 원칙에 따라 검토 후 반영합니다.
-        </p>
-      </Section>
-    </div>
+      </div>
+    </>
   );
 }
