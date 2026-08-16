@@ -1,31 +1,36 @@
 import type { Source } from "@/types/bill";
 
+/** 본문 아래에 작게 붙는 출처 표시 */
 export default function SourceTag({ source }: { source: Source }) {
-  const content = (
+  const text = (
     <>
       <span className="font-medium">{source.publisher}</span>
-      <span className="text-ink-faint">· {source.label}</span>
+      <span className="text-ink-faint"> · {source.label}</span>
+      {source.date && <span className="text-ink-faint"> ({source.date})</span>}
     </>
   );
 
   return (
-    <p className="mt-1.5 text-xs text-ink-faint">
-      <span className="rounded bg-paper-dim px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-soft">
+    <p className="mt-2.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-xs leading-ko-tight text-ink-soft">
+      <span className="chip bg-paper-dim py-0 text-[10px] font-bold tracking-wide text-ink-faint">
         {source.type}
-      </span>{" "}
+      </span>
       {source.url ? (
         <a
           href={source.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-brand hover:underline"
+          className="underline-offset-2 hover:text-brand-strong hover:underline"
         >
-          {content}
+          {text}
+          <span aria-hidden className="ml-0.5 text-ink-faint">
+            ↗
+          </span>
+          <span className="sr-only">(새 창으로 열림)</span>
         </a>
       ) : (
-        content
+        text
       )}
-      {source.date && <span> ({source.date})</span>}
     </p>
   );
 }
