@@ -12,19 +12,19 @@ const CERTAINTY: Record<
   높음: {
     bars: 3,
     color: "bg-claim-fact",
-    track: "bg-claim-fact/15",
+    track: "bg-claim-fact/20",
     help: "1차 자료로 직접 확인됨",
   },
   중간: {
     bars: 2,
     color: "bg-claim-forecast",
-    track: "bg-claim-forecast/15",
+    track: "bg-claim-forecast/20",
     help: "근거는 있으나 해석 여지가 있음",
   },
   낮음: {
     bars: 1,
     color: "bg-claim-allegation",
-    track: "bg-claim-allegation/15",
+    track: "bg-claim-allegation/20",
     help: "근거가 제한적이라 그대로 믿기 어려움",
   },
 };
@@ -33,14 +33,16 @@ function CertaintyMeter({ level }: { level: Certainty }) {
   const { bars, color, track, help } = CERTAINTY[level];
   return (
     <span
-      className="inline-flex items-center gap-1.5"
+      className="inline-flex items-center gap-2"
       title={`근거 확실성 ${level} — ${help}`}
     >
-      <span aria-hidden className="flex gap-0.5">
+      {/* 눈금은 장식이 아니라 값이다. 막대 수와 글자를 함께 둬서 색에만 기대지 않는다. */}
+      <span aria-hidden className="flex items-end gap-[3px]">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className={`h-3 w-1.5 rounded-sm ${i < bars ? color : track}`}
+            className={`w-1.5 rounded-sm ${i < bars ? color : track}`}
+            style={{ height: `${6 + i * 3}px` }}
           />
         ))}
       </span>
@@ -55,12 +57,13 @@ export default function EvidenceList({ items }: { items: EvidenceItem[] }) {
   return (
     <ul className="space-y-3">
       {items.map((item, i) => (
-        <li key={i} className="card p-4">
+        <li key={i} className="card p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <ClaimBadge type={item.claimType} />
+            <span aria-hidden className="h-3.5 w-px bg-paper-line" />
             <CertaintyMeter level={item.certainty} />
           </div>
-          <p className="mt-2.5 text-sm leading-ko text-ink">{item.text}</p>
+          <p className="mt-3 text-[15px] leading-ko text-ink">{item.text}</p>
           {item.source && <SourceTag source={item.source} />}
         </li>
       ))}

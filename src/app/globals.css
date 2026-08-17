@@ -5,94 +5,143 @@
 /* ---------------------------------------------------------------------------
    디자인 토큰
    색은 RGB 채널값만 담아 두고 Tailwind에서 rgb(var(--x) / <alpha-value>)로 쓴다.
+   새 색을 추가할 때는 :root와 .dark 두 곳에 반드시 함께 정의한다.
    --------------------------------------------------------------------------- */
 @layer base {
   :root {
     color-scheme: light;
 
+    /* ── 면 ─────────────────────────────────────────────── */
     --paper: 250 249 244;
-    --paper-dim: 242 239 231;
-    --paper-line: 226 221 208;
+    --paper-dim: 243 240 232;
+    --paper-line: 224 218 205;
+    --paper-line-soft: 234 229 218; /* 표 안쪽처럼 선이 반복되는 곳 */
     --surface: 255 255 255;
     --surface-soft: 247 245 238;
 
-    --ink: 24 26 31;
-    --ink-soft: 62 66 79;
-    --ink-faint: 92 95 110; /* #5C5F6E — 본문 배경 대비 6:1 이상 */
+    /* ── 글자 ───────────────────────────────────────────── */
+    --ink: 22 24 29; /* 본문 배경 대비 16:1 */
+    --ink-soft: 58 62 75; /* 대비 9.4:1 */
+    --ink-faint: 90 93 108; /* 대비 6.1:1 — 12px 이상에서만 쓴다 */
 
+    /* ── 브랜드 ─────────────────────────────────────────── */
     --brand: 138 90 34;
-    --brand-strong: 107 68 25;
-    --brand-soft: 183 134 63;
+    --brand-strong: 104 66 24; /* 글자로 쓸 때 (대비 7.1:1) */
+    --brand-soft: 183 134 63; /* 장식용 — 글자로 쓰지 않는다 */
+    --brand-wash: 244 236 223; /* 아주 옅은 브랜드 면 */
 
-    --claim-fact: 21 100 66;
-    --claim-fact-bg: 231 242 235;
-    --claim-official: 47 62 86;
-    --claim-official-bg: 234 238 244;
-    --claim-interpretation: 95 52 134;
-    --claim-interpretation-bg: 241 234 246;
-    --claim-forecast: 140 79 16;
-    --claim-forecast-bg: 251 238 222;
-    --claim-allegation: 152 37 51;
-    --claim-allegation-bg: 250 234 236;
+    /* ── 문장 표식 ──────────────────────────────────────── */
+    --claim-fact: 18 92 61;
+    --claim-fact-bg: 230 242 234;
+    --claim-official: 43 58 82;
+    --claim-official-bg: 233 237 244;
+    --claim-interpretation: 89 47 128;
+    --claim-interpretation-bg: 240 233 246;
+    --claim-forecast: 130 73 13;
+    --claim-forecast-bg: 250 237 220;
+    --claim-allegation: 146 33 47;
+    --claim-allegation-bg: 250 233 235;
 
-    --stance-pro: 39 89 133;
-    --stance-pro-bg: 232 239 246;
-    --stance-con: 128 66 99;
-    --stance-con-bg: 246 234 241;
+    /* 찬반은 가치판단으로 읽히지 않도록 초록/빨강 대신 중립적인 두 색을 쓴다. */
+    --stance-pro: 34 83 126;
+    --stance-pro-bg: 231 238 246;
+    --stance-con: 121 61 93;
+    --stance-con-bg: 246 233 240;
 
-    --status-proposed: 92 95 110;
-    --status-review: 140 79 16;
-    --status-pending: 95 52 134;
-    --status-passed: 21 100 66;
-    --status-promulgated: 21 100 66;
-    --status-effective: 138 90 34;
-    --status-discarded: 152 37 51;
+    --status-proposed: 90 93 108;
+    --status-review: 130 73 13;
+    --status-pending: 89 47 128;
+    --status-passed: 18 92 61;
+    --status-promulgated: 18 92 61;
+    --status-effective: 130 84 30;
+    --status-discarded: 146 33 47;
 
-    --shadow: 24 26 31;
+    /* ── 입체감 ─────────────────────────────────────────── */
+    --shadow: 43 35 20; /* 종이 느낌을 살리려 순수 검정 대신 따뜻한 갈색 */
+    --shadow-a: 0.06; /* 밝은 화면에서는 그림자로 층을 만든다 */
+    --shadow-b: 0.05;
+    --edge: 255 255 255; /* 카드 윗면 하이라이트 */
+    --edge-a: 0;
+    --focus: 104 66 24;
   }
 
   .dark {
     color-scheme: dark;
 
-    --paper: 19 20 25;
-    --paper-dim: 25 27 33;
-    --paper-line: 52 55 67;
-    --surface: 31 33 41;
+    --paper: 17 18 23;
+    --paper-dim: 23 25 31;
+    --paper-line: 55 59 71;
+    --paper-line-soft: 42 45 55;
+    --surface: 30 32 40;
     --surface-soft: 38 41 50;
 
-    --ink: 242 240 233;
-    --ink-soft: 199 201 210;
-    --ink-faint: 154 158 172;
+    --ink: 243 241 235; /* 대비 15.6:1 */
+    --ink-soft: 201 203 212; /* 대비 10.5:1 */
+    --ink-faint: 156 160 174; /* 대비 7.0:1 */
 
     --brand: 201 149 78;
-    --brand-strong: 226 179 108;
+    --brand-strong: 229 183 113; /* 대비 9.6:1 */
     --brand-soft: 154 111 55;
+    --brand-wash: 45 37 25;
 
-    --claim-fact: 111 211 160;
-    --claim-fact-bg: 20 43 33;
-    --claim-official: 157 182 220;
-    --claim-official-bg: 26 35 50;
-    --claim-interpretation: 195 155 232;
-    --claim-interpretation-bg: 39 28 51;
-    --claim-forecast: 229 168 90;
-    --claim-forecast-bg: 48 34 18;
-    --claim-allegation: 240 138 151;
-    --claim-allegation-bg: 53 26 30;
+    --claim-fact: 118 214 165;
+    --claim-fact-bg: 19 44 33;
+    --claim-official: 163 187 224;
+    --claim-official-bg: 25 35 51;
+    --claim-interpretation: 199 160 235;
+    --claim-interpretation-bg: 40 29 53;
+    --claim-forecast: 232 172 95;
+    --claim-forecast-bg: 49 35 18;
+    --claim-allegation: 243 143 156;
+    --claim-allegation-bg: 54 26 31;
 
-    --stance-pro: 134 182 224;
-    --stance-pro-bg: 22 35 48;
-    --stance-con: 222 156 188;
-    --stance-con-bg: 46 27 37;
+    --stance-pro: 140 186 227;
+    --stance-pro-bg: 21 34 48;
+    --stance-con: 226 161 192;
+    --stance-con-bg: 47 27 38;
 
-    --status-proposed: 154 158 172;
-    --status-review: 229 168 90;
-    --status-pending: 195 155 232;
-    --status-passed: 111 211 160;
-    --status-promulgated: 111 211 160;
-    --status-effective: 226 179 108;
-    --status-discarded: 240 138 151;
+    --status-proposed: 156 160 174;
+    --status-review: 232 172 95;
+    --status-pending: 199 160 235;
+    --status-passed: 118 214 165;
+    --status-promulgated: 118 214 165;
+    --status-effective: 229 183 113;
+    --status-discarded: 243 143 156;
 
+    /* 어두운 화면에서는 검은 그림자가 보이지 않는다.
+       대신 카드 윗변에 아주 옅은 하이라이트를 넣어 층을 만든다. */
     --shadow: 0 0 0;
+    --shadow-a: 0.4;
+    --shadow-b: 0.24;
+    --edge: 255 255 255;
+    --edge-a: 0.055;
+    --focus: 229 183 113;
+  }
+
+  /* ── 색이 아닌 토큰 (테마 무관) ───────────────────────── */
+  :root {
+    /* 헤더 높이. 앵커 스크롤 여백과 목차 바 위치가 이 값을 기준으로 맞춰져 있다. */
+    --header-h: 3.5rem;
+
+    /* 움직임 — 거리와 성격에 따라 나눠 쓴다. 한 값을 전부에 돌려 쓰지 않는다. */
+    --dur-instant: 90ms; /* 색 반전 등 즉각 반응 */
+    --dur-fast: 160ms; /* 호버·포커스 */
+    --dur-base: 240ms; /* 펼침·이동 */
+    --dur-slow: 420ms; /* 등장 */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    /* 숫자·날짜·식별자용. 내려받지 않고 시스템 글꼴을 쓴다.
+       고정폭 글꼴에는 한글이 없으므로, 섞여 들어온 한글이 엉뚱한 글꼴로
+       떨어지지 않도록 본문 글꼴을 대체 순서 뒤에 반드시 붙여 둔다. */
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono",
+      "Menlo", "Consolas", var(--font-sans), "Apple SD Gothic Neo", sans-serif;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --header-h: 4rem;
+    }
   }
 }
 
@@ -103,6 +152,9 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* WCAG 2.2 — 앵커로 이동하거나 Tab으로 포커스가 옮겨갔을 때
+       고정 헤더가 대상을 가리지 않도록 스크롤 여백을 잡아 둔다. */
+    scroll-padding-top: calc(var(--header-h) + 1.5rem);
   }
 
   body {
@@ -112,6 +164,8 @@
     word-break: keep-all;
     overflow-wrap: break-word;
     letter-spacing: -0.003em;
+    font-size: 16px;
+    line-height: 1.7;
   }
 
   h1,
@@ -120,7 +174,7 @@
   h4 {
     word-break: keep-all;
     text-wrap: balance;
-    letter-spacing: -0.018em;
+    letter-spacing: -0.021em;
   }
 
   p,
@@ -135,15 +189,28 @@
     overflow-wrap: anywhere;
   }
 
+  /* 숫자는 자리를 흔들지 않게 고정폭으로 */
+  time,
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
   ::selection {
     @apply bg-brand/25;
   }
 
-  /* 키보드 사용자를 위한 포커스 링 — 기존에는 아무 표시가 없었다. */
+  /* 키보드 사용자를 위한 포커스 링. 어떤 배경에서도 보이도록
+     안쪽에 배경색 링을 한 겹 더 깔아 테두리를 분리한다. */
   :focus-visible {
-    outline: 2px solid rgb(var(--brand-strong));
+    outline: 2px solid rgb(var(--focus));
     outline-offset: 2px;
-    border-radius: 3px;
+    border-radius: 4px;
+  }
+
+  /* 스크롤바도 테마를 따르게 한다. */
+  * {
+    scrollbar-color: rgb(var(--paper-line)) transparent;
+    scrollbar-width: thin;
   }
 
   /* 애니메이션을 줄이도록 설정한 사용자 존중 */
@@ -157,6 +224,7 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 }
@@ -165,16 +233,44 @@
    반복되는 조합을 컴포넌트 클래스로 정리
    --------------------------------------------------------------------------- */
 @layer components {
+  /* ── 면 ─────────────────────────────────────────────── */
   .card {
-    @apply rounded-xl border border-paper-line bg-surface shadow-card;
+    @apply relative rounded-xl border border-paper-line bg-surface shadow-card;
+    /* 어두운 화면에서 그림자 대신 층을 만들어 주는 윗변 하이라이트 */
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--edge) / var(--edge-a)),
+      0 1px 2px rgb(var(--shadow) / var(--shadow-b)),
+      0 1px 3px -1px rgb(var(--shadow) / var(--shadow-a));
   }
 
   .card-interactive {
-    @apply card transition duration-200 hover:-translate-y-0.5 hover:border-brand/45 hover:shadow-lift;
+    @apply card cursor-pointer transition-[transform,box-shadow,border-color] duration-200 ease-out;
   }
 
+  .card-interactive:hover {
+    @apply -translate-y-0.5 border-brand/45;
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--edge) / var(--edge-a)),
+      0 8px 20px -6px rgb(var(--shadow) / var(--shadow-a)),
+      0 2px 6px -2px rgb(var(--shadow) / var(--shadow-b));
+  }
+
+  /* 헤더·목차 바처럼 위에 떠 있는 반투명 면 */
+  .glass {
+    @apply bg-paper/80 backdrop-blur-xl backdrop-saturate-150;
+  }
+
+  /* 본문 안에 끼워 넣는 보조 정보 상자 */
+  .panel {
+    @apply rounded-xl border border-paper-line bg-paper-dim p-5 sm:p-6;
+  }
+
+  /* ── 버튼 ───────────────────────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors;
+    @apply inline-flex min-h-[2.75rem] cursor-pointer select-none items-center
+      justify-center gap-2 rounded-lg px-5 text-sm font-semibold
+      transition-[background-color,border-color,color,box-shadow,transform]
+      duration-150 ease-out active:translate-y-px;
   }
 
   .btn-primary {
@@ -182,24 +278,53 @@
   }
 
   .btn-secondary {
-    @apply btn border border-paper-line bg-surface text-ink hover:border-brand/45 hover:bg-paper-dim;
+    @apply btn border border-paper-line bg-surface text-ink
+      hover:border-brand/45 hover:bg-paper-dim;
   }
 
+  .btn-ghost {
+    @apply btn px-3 text-ink-soft hover:bg-paper-dim hover:text-ink;
+  }
+
+  /* ── 표식 ───────────────────────────────────────────── */
   .chip {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-flex items-center whitespace-nowrap rounded-full px-2.5
+      py-[3px] text-[11px] font-bold leading-[1.45] tracking-[0.01em]
+      sm:text-xs;
   }
 
-  /* 본문 문단 — 한글 행간을 넉넉하게 */
+  /* ── 글 ─────────────────────────────────────────────── */
+  /* 본문 문단 — 16px 아래로 내려가지 않게 하고 한글 행간을 넉넉히 준다. */
   .prose-ko {
-    @apply text-[15px] leading-ko text-ink-soft sm:text-base;
+    @apply text-base leading-ko text-ink-soft sm:text-[1.0625rem];
   }
 
   .eyebrow {
-    @apply text-xs font-bold tracking-[0.14em] text-brand-strong;
+    @apply inline-flex items-center gap-2 text-[11px] font-bold uppercase
+      tracking-[0.16em] text-brand-strong sm:text-xs;
+  }
+
+  /* 눈썹 문구 앞에 붙는 짧은 선 — 장식이 아니라 시작점 표시 */
+  .eyebrow::before {
+    content: "";
+    @apply h-px w-5 shrink-0 bg-brand/60;
   }
 
   .link-quiet {
-    @apply text-brand-strong underline-offset-4 hover:underline;
+    @apply rounded text-brand-strong underline decoration-brand/35
+      underline-offset-4 transition-colors hover:decoration-brand;
+  }
+
+  /* 문단 사이를 가르는 실선 — 색 대신 굵기로 위계를 만든다. */
+  .rule {
+    @apply h-px w-full border-0 bg-paper-line;
+  }
+
+  /* 숫자·날짜·식별자 */
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -229,7 +354,31 @@
     white-space: nowrap;
     border-width: 0;
   }
+
+  /* 첫 화면 배경에 아주 옅게 까는 격자.
+     기록물 성격을 드러내면서도 글자 대비를 건드리지 않을 만큼만 넣는다. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(var(--ink) / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--ink) / 0.035) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+    background-position: center;
+  }
+
+  /* 가장자리로 갈수록 사라지게 해서 격자가 화면을 가두지 않도록 한다. */
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 35%, transparent 100%);
+  }
 }
+
+/* ---------------------------------------------------------------------------
+   움직임에 대한 입장
+   스크롤에 맞춰 카드가 떠오르는 연출은 넣지 않는다. 이 사이트의 목적은
+   기록을 읽히는 것이고, 등장 효과는 화면 밖 요소를 잠시 투명하게 만든다.
+   실제로 긴 문서 아래쪽에서 내용이 투명한 채로 남는 경우가 확인됐다.
+   움직임은 상태가 바뀌는 곳(목차 펼침, 호버, 진행바)에만 쓴다.
+   --------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
    인쇄 — 기록물 성격상 출력해서 읽는 경우를 고려
@@ -239,9 +388,26 @@
     display: none !important;
   }
 
+  html {
+    scroll-padding-top: 0;
+  }
+
   body {
     background: #fff;
     color: #000;
+    font-size: 11pt;
+  }
+
+  .card,
+  .panel {
+    box-shadow: none !important;
+    border-color: #bbb !important;
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
   }
 
   a[href^="http"]::after {
