@@ -66,7 +66,7 @@ describe("기본 4개 질문만 답한 30대 직장인", () => {
   it("6범주 합이 전체 건수와 같고 분모가 드러난다", () => {
     const sum = Object.values(result.counts).reduce((a, b) => a + b, 0);
     expect(sum).toBe(result.total);
-    expect(result.total).toBe(5);
+    expect(result.total).toBe(bills.length);
   });
 });
 
@@ -203,7 +203,13 @@ describe("월 실수령액으로 답한 경우", () => {
 
 describe("정렬 (§7.5)", () => {
   it("30대 직장인의 목록 순서가 결정론적으로 재현된다", () => {
+    // 직접 대상(시행 중 → 심사 중) → 조건부 → 연결 없음 순.
+    // 법안이 늘어나면 이 목록도 함께 갱신한다. 순서가 흔들리는지를 보는 스냅샷이다.
     expect(run(employee30).items.map((i) => i.bill.slug)).toEqual([
+      "deposit-protection-limit-2025",
+      "parental-leave-expansion-2025",
+      "retirement-age-extension-2026",
+      "jeonse-fraud-minimum-guarantee-2026",
       "national-pension-reform-2025",
       "inheritance-tax-reform-2025",
       "yellow-envelope-act-2025",
