@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAllBills } from "@/lib/bills";
-import BillBrowser from "@/components/BillBrowser";
+import { impactData } from "@/data/impact";
+import BillsExplorer from "@/components/personalize/BillsExplorer";
 
 export const metadata: Metadata = {
   title: "법안·정책 추적",
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 
 export default function BillsPage() {
   const bills = getAllBills();
+  const impact = Object.fromEntries(
+    impactData.map((d) => [d.review.billSlug, d]),
+  );
 
   return (
     <div>
@@ -29,7 +33,7 @@ export default function BillsPage() {
       </div>
 
       <div className="mx-auto max-w-content px-5 py-10 sm:px-6 sm:py-12">
-        <BillBrowser bills={bills} />
+        <BillsExplorer bills={bills} impact={impact} />
       </div>
     </div>
   );

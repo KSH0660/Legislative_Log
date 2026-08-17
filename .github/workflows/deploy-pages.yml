@@ -32,6 +32,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 규칙 엔진의 불변식(단조성·완전 분할·결정론·중립성)을 빌드 전에 강제한다.
+      # 개인화 데이터 검증(validate:impact)은 prebuild로 build 앞에 자동으로 붙는다.
+      - name: Run tests
+        run: npm test
+
       - name: Build static site
         env:
           GITHUB_PAGES: "true"

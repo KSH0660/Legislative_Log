@@ -128,6 +128,7 @@ export const nationalPensionReform2025: Bill = {
       who: "2030~2040세대 가입자",
       how: "소급 적용 없이 인상된 소득대체율(43%) 혜택을 상대적으로 긴 기간 누리게 된다.",
       claimType: "interpretation",
+      pathwayId: "nps-future-benefit",
     },
     {
       who: "저소득 장기 가입자",
@@ -138,6 +139,7 @@ export const nationalPensionReform2025: Bill = {
       who: "이미 수급 중인 고령층",
       how: "이번 소득대체율 인상은 신규 산정분에 적용되는 구조로, 기수급자에게 소급되지는 않는다.",
       claimType: "fact",
+      pathwayId: "nps-current-recipient-no-change",
     },
   ],
   costBearers: [
@@ -146,16 +148,19 @@ export const nationalPensionReform2025: Bill = {
       how: "보험료율 인상분의 절반을 부담한다. 개인 부담률이 4.5%에서 2033년 6.5%까지 늘어난다.",
       scale: "월 소득 300만원 기준 개인 부담액 약 13.5만원→19.5만원(2033년, 세전 단순 계산)",
       claimType: "fact",
+      pathwayId: "nps-employee-contribution",
     },
     {
       who: "사업주",
       how: "근로자와 동일하게 보험료율 인상분의 절반을 추가로 부담한다.",
       claimType: "fact",
+      pathwayId: "nps-owner-payroll-cost",
     },
     {
       who: "지역가입자(자영업자 등)",
       how: "보험료 전액을 본인이 부담하므로 인상분 전체를 그대로 체감한다.",
       claimType: "fact",
+      pathwayId: "nps-regional-contribution",
     },
   ],
   fiscalImpact:
