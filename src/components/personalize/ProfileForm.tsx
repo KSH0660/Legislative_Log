@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ProfileKey } from "@/types/impact";
 import type { ProfileOption, ProfileQuestion } from "@/types/profile";
 import { BASIC_QUESTIONS, getQuestion } from "@/lib/profile/questions";
@@ -168,15 +168,33 @@ export default function ProfileForm({
   const { clear, remember, setRemember, profile } = usePersonalization();
   const answered = Object.keys(profile).length > 0;
 
-  // 이미 답한 조건부 질문도 고칠 수 있어야 하므로 함께 보여준다.
-  const conditionalFields = Array.from(
+  // 지금 물을 가치가 있는 조건부 항목. 답을 하나 고칠 때마다 이 집합이 달라진다.
+  // 기본 질문은 위에 이미 있으므로 여기서 제외한다. 그러지 않으면 판정을 바꾸는
+  // 기본 항목(경제활동 상태 등)이 한 화면에 두 번 나온다.
+  // (이미 답한 조건부 항목도 고칠 수 있어야 하므로 함께 넣는다.)
+  const relevantFields = Array.from(
     new Set([
       ...pendingFields,
-      ...(Object.keys(profile) as ProfileKey[]).filter(
-        (f) => getQuestion(f).group === "conditional",
-      ),
+      ...(Object.keys(profile) as ProfileKey[]),
     ]),
-  );
+  ).filter((f) => getQuestion(f).group === "conditional");
+
+  // 화면에는 **한 번 나타난 질문을 그 자리에 그대로 둔다.**
+  //
+  // 판정을 바꿀 수 있는 항목은 답 하나에 따라 늘거나 줄기 때문에, 계산 결과를
+  // 그대로 렌더하면 선택지를 누를 때마다 질문이 사라지고 순서가 뒤바뀐다.
+  // 방금 누른 버튼이 화면에서 이동해 버리는 것은 조작 자체를 어렵게 만든다.
+  // 그래서 첫 등장 순서를 유지하고 목록을 줄이지 않는다. 새로 필요해진 질문만
+  // 끝에 덧붙는다. (질문을 다시 고르는 창은 열 때마다 새로 시작한다.)
+  const [shownFields, setShownFields] = useState<ProfileKey[]>(relevantFields);
+
+  useEffect(() => {
+    setShownFields((prev) => {
+      const added = relevantFields.filter((f) => !prev.includes(f));
+      return added.length > 0 ? [...prev, ...added] : prev;
+    });
+    // relevantFields는 매 렌더 새 배열이라 값으로 비교한다.
+  }, [relevantFields.join("|")]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="space-y-5">
@@ -200,17 +218,17 @@ export default function ProfileForm({
         </div>
       </div>
 
-      {conditionalFields.length > 0 && (
+      {shownFields.length > 0 && (
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
             더 알려주시면 정확해지는 것
           </p>
           <p className="mt-1.5 text-xs leading-ko text-ink-soft">
             아래 질문만 골라 물어봅니다. 어떤 답을 해도 판정이 달라지지 않는
-            질문은 아예 보여주지 않습니다.
+            질문은 처음부터 보여주지 않습니다.
           </p>
           <div className="mt-2.5 space-y-3">
-            {conditionalFields.map((field) => (
+            {shownFields.map((field) => (
               <QuestionField key={field} question={getQuestion(field)} highlight />
             ))}
           </div>
