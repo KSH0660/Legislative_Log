@@ -10,6 +10,10 @@ import { yellowEnvelopeImpact } from "./yellow-envelope-act-2025";
 import { inheritanceTaxImpact } from "./inheritance-tax-reform-2025";
 import { prosecutionReformImpact } from "./prosecution-reform-2026";
 import { nationalAssemblyActImpact } from "./national-assembly-act-reform-2026";
+import { depositProtectionImpact } from "./deposit-protection-limit-2025";
+import { parentalLeaveImpact } from "./parental-leave-expansion-2025";
+import { jeonseFraudImpact } from "./jeonse-fraud-minimum-guarantee-2026";
+import { retirementAgeImpact } from "./retirement-age-extension-2026";
 
 export const impactData: BillImpactData[] = [
   nationalPensionImpact,
@@ -17,6 +21,10 @@ export const impactData: BillImpactData[] = [
   inheritanceTaxImpact,
   prosecutionReformImpact,
   nationalAssemblyActImpact,
+  depositProtectionImpact,
+  parentalLeaveImpact,
+  jeonseFraudImpact,
+  retirementAgeImpact,
 ];
 
 export const impactBySlug: Map<string, BillImpactData> = new Map(
