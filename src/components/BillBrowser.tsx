@@ -2,7 +2,11 @@
 
 import { useMemo, useState } from "react";
 import type { Bill, BillStatus } from "@/types/bill";
+import type { PersonalizationResult } from "@/lib/impact";
 import BillCard from "./BillCard";
+import BillCardPersonalization, {
+  RelevanceHeader,
+} from "./personalize/BillCardPersonalization";
 
 // 상세한 진행 단계를 그대로 보여주면 고르기 어려워서, 세 덩어리로 묶는다.
 const GROUPS = [
@@ -49,7 +53,17 @@ function FilterChip({
   );
 }
 
-export default function BillBrowser({ bills }: { bills: Bill[] }) {
+export default function BillBrowser({
+  bills,
+  /**
+   * 개인화 결과. 있으면 정렬 기준만 §7.5로 바뀌고, 아래 필터는 그대로 작동한다.
+   * 두 축은 직교한다. (§10.1)
+   */
+  personalized,
+}: {
+  bills: Bill[];
+  personalized?: PersonalizationResult | null;
+}) {
   const [group, setGroup] = useState<GroupId>("all");
   const [category, setCategory] = useState<string>("전체");
   const [query, setQuery] = useState("");
@@ -57,6 +71,12 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
   const categories = useMemo(
     () => ["전체", ...Array.from(new Set(bills.map((b) => b.category)))],
     [bills],
+  );
+
+  // 개인화가 켜지면 목록 순서만 관련 순서로 바뀐다. 필터 결과 집합은 같다.
+  const ordered = useMemo(
+    () => (personalized ? personalized.items.map((i) => i.bill) : bills),
+    [bills, personalized],
   );
 
   const counts = useMemo(() => {
@@ -72,7 +92,7 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return bills.filter((bill) => {
+    return ordered.filter((bill) => {
       if (group !== "all" && !GROUP_STATUSES[group].includes(bill.status)) {
         return false;
       }
@@ -89,7 +109,7 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [bills, group, category, query]);
+  }, [ordered, group, category, query]);
 
   const filtering =
     group !== "all" || category !== "전체" || query.trim() !== "";
@@ -208,6 +228,9 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
           {filtering && (
             <span className="text-ink-faint"> / 전체 {bills.length}건</span>
           )}
+          {personalized && (
+            <span className="text-ink-faint"> · 내 조건에 맞춘 정렬</span>
+          )}
         </p>
         {filtering && (
           <button
@@ -232,10 +255,24 @@ export default function BillBrowser({ bills }: { bills: Bill[] }) {
       </div>
 
       {filtered.length > 0 ? (
-        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((bill) => (
-            <BillCard key={bill.slug} bill={bill} />
-          ))}
+        <div
+          className={`mt-4 grid gap-5 ${
+            personalized ? "lg:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"
+          }`}
+        >
+          {filtered.map((bill) => {
+            const item = personalized?.bySlug.get(bill.slug);
+            return (
+              <BillCard
+                key={bill.slug}
+                bill={bill}
+                personalHeader={item ? <RelevanceHeader item={item} /> : undefined}
+                personalBody={
+                  item ? <BillCardPersonalization item={item} /> : undefined
+                }
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="mt-4 rounded-2xl border border-dashed border-paper-line px-6 py-16 text-center">

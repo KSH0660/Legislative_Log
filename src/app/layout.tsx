@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { PersonalizationProvider } from "@/components/personalize/PersonalizationProvider";
 import "./globals.css";
 
 const notoSans = Noto_Sans_KR({
@@ -82,11 +83,15 @@ export default function RootLayout({
         >
           본문 바로가기
         </a>
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        {/* 개인화 상태는 목록과 상세가 함께 쓰므로 최상위에 둔다.
+            첫 페인트는 언제나 비개인화 상태이며, 복원은 useEffect에서만 한다. (§13.2) */}
+        <PersonalizationProvider>
+          <Header />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </PersonalizationProvider>
       </body>
     </html>
   );

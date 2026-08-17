@@ -125,11 +125,13 @@ export const yellowEnvelopeAct2025: Bill = {
       who: "하청·특수고용 노동자 (사내하청, 플랫폼 배달·택배기사 등)",
       how: "근로조건에 실질적 권한이 없는 하청업체가 아니라, 실제 결정권을 가진 원청에 교섭을 요구할 법적 근거를 얻는다.",
       claimType: "fact",
+      pathwayId: "yea-subcontract-bargaining",
     },
     {
       who: "손배가압류 위험에 노출됐던 개별 조합원",
       how: "쟁의행위 손해배상 책임이 개인의 가담 정도에 따라 개별화되어, 노조 전체에 대한 연대책임을 이유로 한 개인 대상 거액 청구 위험이 줄어든다.",
       claimType: "fact",
+      pathwayId: "yea-liability-individualization",
     },
   ],
   costBearers: [
@@ -137,6 +139,7 @@ export const yellowEnvelopeAct2025: Bill = {
       who: "원청 기업",
       how: "하청 노동자에 대한 신규 교섭 의무와 사용자성 판단을 둘러싼 법적 분쟁 위험을 새로 부담하게 된다.",
       claimType: "interpretation",
+      pathwayId: "yea-principal-employer-cost",
     },
     {
       who: "하청업체",

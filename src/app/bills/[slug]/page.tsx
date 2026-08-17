@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllBills, getBillBySlug } from "@/lib/bills";
+import { getImpactData } from "@/data/impact";
 import { BILL_STATUS_DESCRIPTION } from "@/types/bill";
 import { getSection } from "@/lib/sections";
 import StatusBadge from "@/components/StatusBadge";
@@ -20,6 +21,7 @@ import {
 } from "@/components/TableOfContents";
 import ReadingProgress from "@/components/ReadingProgress";
 import ClaimLegend from "@/components/ClaimLegend";
+import BillImpactBlock from "@/components/personalize/BillImpactBlock";
 
 export function generateStaticParams() {
   return getAllBills().map((bill) => ({ slug: bill.slug }));
@@ -48,6 +50,7 @@ export default async function BillDetailPage({
   const { slug } = await params;
   const bill = getBillBySlug(slug);
   if (!bill) notFound();
+  const impact = getImpactData(slug) ?? null;
 
   return (
     <>
@@ -209,6 +212,10 @@ export default async function BillDetailPage({
 
             {/* 06 · 이득과 부담 */}
             <Section section={getSection("stakeholders")} tone="muted">
+              {/* 개인화 블록은 이 섹션의 첫 번째 서브블록으로 들어간다.
+                  독립 섹션으로 만들면 목차 항목 수와 읽기 진행률이 사용자 상태에
+                  따라 흔들리기 때문이다. (§10.3) */}
+              <BillImpactBlock bill={bill} data={impact} />
               <StakeholderGrid
                 beneficiaries={bill.beneficiaries}
                 costBearers={bill.costBearers}

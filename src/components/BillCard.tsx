@@ -51,15 +51,23 @@ function StageDots({ status }: { status: BillStatus }) {
   );
 }
 
-export default function BillCard({ bill }: { bill: Bill }) {
+export default function BillCard({
+  bill,
+  /** 개인화가 켜졌을 때 카드 위에 얹는 관련성 배지 (§10.1) */
+  personalHeader,
+  /** 개인화가 켜졌을 때 카드 아래에 붙는 관련 이유 블록 (§10.1) */
+  personalBody,
+}: {
+  bill: Bill;
+  personalHeader?: React.ReactNode;
+  personalBody?: React.ReactNode;
+}) {
   const shown = bill.tags.slice(0, MAX_TAGS);
   const rest = bill.tags.length - shown.length;
+  const personalized = Boolean(personalBody || personalHeader);
 
-  return (
-    <Link
-      href={`/bills/${bill.slug}`}
-      className="card-interactive group flex flex-col p-5 sm:p-6"
-    >
+  const main = (
+    <div className="flex flex-1 flex-col">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-strong sm:text-xs">
           {bill.category}
@@ -116,6 +124,40 @@ export default function BillCard({ bill }: { bill: Bill }) {
           <path d="M5 12h13M13 6l6 6-6 6" />
         </svg>
       </span>
-    </Link>
+    </div>
+  );
+
+  // 개인화가 꺼져 있으면 기존과 완전히 같은 카드다.
+  if (!personalized) {
+    return (
+      <Link
+        href={`/bills/${bill.slug}`}
+        className="card-interactive group flex flex-col p-5 sm:p-6"
+      >
+        {main}
+      </Link>
+    );
+  }
+
+  // 개인화 블록에는 링크·펼치기 같은 조작이 들어가므로 카드 전체를 링크로 감싸지 않는다.
+  return (
+    <article className="card flex flex-col overflow-hidden">
+      {personalHeader && (
+        <div className="border-b border-paper-line bg-paper-dim/60 px-5 py-3 sm:px-6">
+          {personalHeader}
+        </div>
+      )}
+      <Link
+        href={`/bills/${bill.slug}`}
+        className="group flex flex-1 flex-col p-5 transition-colors duration-150 hover:bg-paper-dim/40 sm:p-6"
+      >
+        {main}
+      </Link>
+      {personalBody && (
+        <div className="border-t border-paper-line bg-surface-soft px-5 py-4 sm:px-6">
+          {personalBody}
+        </div>
+      )}
+    </article>
   );
 }

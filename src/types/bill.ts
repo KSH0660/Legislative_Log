@@ -106,6 +106,12 @@ export interface StakeholderEntry {
   scale?: string;
   claimType: ClaimType;
   source?: Source;
+  /**
+   * 대응하는 개인화 영향경로(ImpactPathway)의 id.
+   * 자유문장 요약과 구조화된 개인화 레이어가 서로 다른 말을 하는 것을 막는 연결고리다.
+   * 선택 항목이며, 링크가 없으면 검증 스크립트가 경고만 낸다.
+   */
+  pathwayId?: string;
 }
 
 export interface EvidenceItem {
