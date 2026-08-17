@@ -82,10 +82,15 @@ export default function BillsExplorer({
             >
               내 조건에 맞춰 보기
             </h2>
+            {/* 질문에 답하는 동안에는 이 줄이 바뀌지 않게 고정한다.
+                답할 때마다 요약이 길어져 줄바꿈이 생기면 아래 질문 전체가
+                밀려 내려가, 방금 누르려던 버튼이 손 밑에서 이동한다. */}
             <p className="mt-1 text-sm leading-ko text-ink-soft">
-              {active
-                ? summaryText
-                : "연령대·경제활동·가구·소득 구간을 고르면, 어떤 법안이 왜 나와 연결되는지 조건과 근거로 설명해 드립니다."}
+              {editing
+                ? "답을 고치면 아래 결과가 바로 반영됩니다. 다 고르셨으면 '결과 보기'를 누르세요."
+                : active
+                  ? summaryText
+                  : "연령대·경제활동·가구·소득 구간을 고르면, 어떤 법안이 왜 나와 연결되는지 조건과 근거로 설명해 드립니다."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
